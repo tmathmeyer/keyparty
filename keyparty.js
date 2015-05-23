@@ -1,6 +1,5 @@
 var server = require("isotope-dev").create(8080);
 var fs = require("fs");
-var crypto = require('crypto');
 var exec = require('child_process').exec;
 
 keys = {};
