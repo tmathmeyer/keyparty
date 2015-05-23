@@ -1,0 +1,30 @@
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script type="text/javascript">
+		submit = function() {
+			$.ajax({
+				type: 'POST',
+				url: window.location.href+"",
+				data: {"pgpkey": document.getElementById("pubkey").value, "name":document.getElementById("username").value},
+				success: function(resp) {
+
+				},
+				error: function() {
+
+				}
+			});
+		}
+	</script>
+</head>
+<body>
+username: <br />
+<input type="text" id="username">
+<br />
+<br />
+<textarea id="pubkey" rows="10" cols="50">paste signed</textarea>
+<br />
+<br />
+<button type="button" onclick="submit()">submit</button>
+</body>
+</html>
