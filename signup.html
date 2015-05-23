@@ -8,10 +8,10 @@
 				url: '/init/'+document.getElementById("username").value,
 				data: {"pgpkey": document.getElementById("pubkey").value},
 				success: function(resp) {
-
+                    window.location.replace("/list");
 				},
-				error: function() {
-
+				error: function(err) {
+                    alert(err.responseText);
 				}
 			});
 		}

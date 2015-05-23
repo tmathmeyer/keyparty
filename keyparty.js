@@ -55,7 +55,6 @@ fingerprint = function(name) {
 }
 
 server.post("init/_var", function(res, req, name) {
-    console.log("creating user with name: ["+name+"]");
     server.extract_data(req, function(data) {
         fs.writeFile("/tmp/"+name+".asc", data.pgpkey, function(err) {
             if (err) {
@@ -63,9 +62,9 @@ server.post("init/_var", function(res, req, name) {
                 res.end(err);
             } else {
                 exec(fingerprint(name+".asc"), function(error, out, err) {
-                    if (error) {
+                    if (error || out.length < 32) {
                         res.writeHead(500, {"Content-Type":"text/plain"});
-                        res.end(error+"");
+                        res.end(JSON.stringify(err));
                     } else {
                         keys[out.replace(/\s/g, '')] = makekeydata(data.pgpkey, name+".asc");
                         res.writeHead(200, {"Content-Type":"text/plain"});

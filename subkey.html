@@ -8,7 +8,7 @@
 				url: window.location.href+"",
 				data: {"pgpkey": document.getElementById("pubkey").value, "name":document.getElementById("username").value},
 				success: function(resp) {
-
+                    window.location.replace("/list");
 				},
 				error: function() {
 
