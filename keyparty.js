@@ -1,6 +1,7 @@
 var server = require("isotope-dev").create(8080);
 var fs = require("fs");
 var exec = require('child_process').exec;
+var zip = require('adm-zip');
 
 keys = {};
 
@@ -35,6 +36,7 @@ server.post("subsign/_var", function(res, req, fp) {
     server.extract_data(req, function(data) {
         if (keys[fp]) {
             (keys[fp].signitures)[data.name] = data.pgpkey;
+            keys[fp].zip.addFile(data.name, new Buffer(data.pgpkey), "signiture");
         }
     });
     res.writeHead(200, {"Content-Type":"text/plain"});
@@ -45,7 +47,8 @@ makekeydata = function(pgpdata, name) {
     return {
         pgpkey: pgpdata,
         pgpname: name,
-        signitures: {}
+        signitures: {},
+        zip: new zip()
     };
 }
 
@@ -85,14 +88,14 @@ server.get("list", function(res) {
             res.write("<a href='key/"+keysha+"/"+key.pgpname+"'>"+key.pgpname+"</a><br />"+keysha+"<br />");
             res.write("<a href='/subsign/"+keysha+"'>Submit signed keys</a>");
             res.write("<hr />");
-            res.write("Signitures: <br />");
+            res.write("Signitures: <a href='/skey_all/"+keysha+"/"+key.pgpname+".zip'>Download All</a><br />");
             for(var signedby in key.signitures) {
                 if (key.signitures.hasOwnProperty(signedby)) {
                     res.write(signedby+" :: <a href='/skey/"+keysha+"/"+signedby+"/sigof_"+signedby+".asc'>download</a>");
                     res.write("<br />");
                 }
             }
-            res.write("</div>");
+            res.write("</div><br /><br />");
         }
     }
     res.end("</body></html>");
@@ -115,6 +118,15 @@ server.get("skey/_var/_var/_var", function(res, req, sha, sby) {
         } else {
             server.notFound();
         }
+    } else {
+        server.notFound();
+    }
+});
+
+server.get("skey_all/_var/_var", function(res, req, sha, zip) {
+    if (keys.hasOwnProperty(sha)) {
+        res.writeHead(200, {"Content-Type": "application/zip"});
+        res.end(keys[sha].zip.toBuffer());
     } else {
         server.notFound();
     }
